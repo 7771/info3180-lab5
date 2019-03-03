@@ -10,6 +10,7 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, current_user, login_required
 from app.forms import LoginForm
 from app.models import UserProfile
+#import UserProfile.user_profiles
 import werkzeug
 from werkzeug.security import check_password_hash
 
@@ -45,17 +46,17 @@ def login():
         # and not just one field
         if form.username.data and form.password.data:
             # Get the username and password values from the form.
-            username=form.username.data
-            check_password_hash(form.password, form.password.data)
-            password=form.password.data
-            #user=UserProfile.query.filter_by(username=username).first()
-            user = UserProfile.
-            password.
+            username=request.form['username']
+            user=UserProfile.query.filter_by(username=username).first()
+            if user:
+                password=request.form['password']
+                check_password_hash(form.password, form.password.data)
+                user = UserProfile.query.filter_by(password=password).first()
             login_user(user)
             return redirect(url_for("/secure-page"))  # they should be redirected to a secure-page route instead
         flash("You Are Logged In!","Success")
-    return render_template("login.html", form=form)
-        else:
+        return render_template("login.html", form=form)
+    else:
             # using your model, query database for a user based on the username
             # and password submitted. Remember you need to compare the password hash.
             # You will need to import the appropriate function to do so.
@@ -64,7 +65,7 @@ def login():
             # get user id, load into session
             # remember to flash a message to the user
             flash("username or passwrod is invalid")
-    return render_template('login.html', form=form)    
+            return render_template('login.html', form=form)    
 
 @app.route("/logout")
 @login_required
@@ -78,7 +79,7 @@ def logout():
 # the user ID stored in the session
 @login_manager.user_loader
 def load_user(id):
-    user = UserProfile.query.filter_by(id=id).first()
+    user = UserProfile.query.filter_by(id=id)
     if user:
         return UserProfile.query.get(int(id))
     
