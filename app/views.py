@@ -4,15 +4,17 @@ Jinja2 Documentation:    http://jinja.pocoo.org/2/documentation/
 Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
-
-from app import app, db, login_manager
-from flask import render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, current_user, login_required
-from app.forms import LoginForm
-from app.models import UserProfile
-#import UserProfile.user_profiles
+import os
 import werkzeug
+
+from app import app, db#, login_manager
+from flask import render_template, request, redirect, url_for, flash
+#from flask_login import login_user, logout_user, current_user, login_required
+from .forms import Profile, Photo
 from werkzeug.security import check_password_hash
+from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
+from .models import ProfilesDB
+#import UserProfile.user_profiles
 
 ###
 # Routing for your application.
@@ -23,71 +25,54 @@ def home():
     """Render website's home page."""
     return render_template('home.html')
 
-@app.route('/secure-page')
-@login_required
-def secure_page():
-    if current_user.is_authenticated:
-        return render_template('secure-page.html') 
-    else:
-        return render_template('login.html') 
-
 @app.route('/about/')
 def about():
     """Render the website's about page."""
     return render_template('about.html')
 
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
+@app.route('/profile', methods=['GET', 'POST'])
+def new_profile():
+    form = Profile()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            firstname = form.firstname.data
+            lastname = form.lastname.data
+            email = form.email.data
+            location = form. location.data
+            gender = form. gender.data
+            biography = form.biography.data
+            
+        
+            NewProfile = ProfilesDB(firstname, lastname, email, location, gender,biography) 
+            
+            db.session.add(NewProfile) 
+            db.session.commit()
+            
+            flash ('PROFILE SUCCESSFULLY CREATED')
+            return render_template('profile.html', form=form)
+        flash('Please try again; There was an error in creating your Profile')
+    return render_template('profile.html', form=Profile)
     
-    form = LoginForm()
-    if request.method == "POST" and form.validate_on_submit():
-        # change this to actually validate the entire form submission
-        # and not just one field
-        if form.username.data and form.password.data:
-            # Get the username and password values from the form.
-            username=request.form['username']
-            user=UserProfile.query.filter_by(username=username).first()
-            if user:
-                password=request.form['password']
-                check_password_hash(form.password, form.password.data)
-                user = UserProfile.query.filter_by(password=password).first()
-            login_user(user)
-            return redirect(url_for("/secure-page"))  # they should be redirected to a secure-page route instead
-        flash("You Are Logged In!","Success")
-        return render_template("login.html", form=form)
-    else:
-            # using your model, query database for a user based on the username
-            # and password submitted. Remember you need to compare the password hash.
-            # You will need to import the appropriate function to do so.
-            # Then store the result of that query to a `user` variable so it can be
-            # passed to the login_user() method below.
-            # get user id, load into session
-            # remember to flash a message to the user
-            flash("username or passwrod is invalid")
-            return render_template('login.html', form=form)    
+@app.route('/profiles')
+def show_profiles():
+    form = Profile()
+    users = request.form['data']
+    users = users.query.all()
+    data = {"Profiles": users}
+    return render_template('profiles.html', data)
 
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    flash('You are logged out')
-    return redirect(url_for('home'))
-    
-
-# user_loader callback. This callback is used to reload the user object from
-# the user ID stored in the session
-@login_manager.user_loader
-def load_user(id):
-    user = UserProfile.query.filter_by(id=id)
-    if user:
-        return UserProfile.query.get(int(id))
-    
+@app.route('/profile/userid')
+def ProfileUsers():
+    form = Profile()
+    email=request.form['email']
+    email=Profile.email.query.filter.first()
+    if email:
+        email=request.form['email']
+        return render_template('viewprofile.html', form=form)
 
 ###
 # The functions below should be applicable to all Flask apps.
 ###
-
 
 @app.route('/<file_name>.txt')
 def send_text_file(file_name):

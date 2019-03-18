@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <div class="profile center-block">
+    <h2>Profiles</h2><br>
+    {% include 'flash_messages.html' %}
+    {{ form.csrf_token }}
+    <div>
+      users=ProfilesDB
+      {% for user in users %}
+      <span>{{ user.firstname}}{{ user.lastname }}</span>
+      <div>{{ user.email }}</div>
+      <div>{{user.location}}</div>
+      <div>{{user.created_on}}</div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

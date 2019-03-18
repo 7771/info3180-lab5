@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    users=ProfilesDB
+    {% if users.email=email %}
+    
+        <h2>{{user.firstname }}{{ user.lastname }}</h2>
+        <div>{{user.email }}</div>
+        <div>{{user.location }}</div>
+        <div>{{user.created_on }}</div>
+        <div>{{user.biography}}</div>
+    <div>
+        <button type="submit" name="Send Message" class="btn btn-primary btn-block"><a href="mailto:email">Send Message</button>
+        <button type="submit" name="Follow" class="btn btn-primary btn-block"><a href="mailto:email">Follow</button>
+    </div>
+
+    </div>
+{% endblock %}

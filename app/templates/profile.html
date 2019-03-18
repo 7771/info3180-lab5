@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block main %}
+    <div class="profile center-block">
+    <h2>Add Profile</h2>
+    {% include 'flash_messages.html' %}
+    <form action="{{ url_for('forms') }}" method="post">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            <legend>Firstname</legend>
+            <input id="firstname" name="firstname" type="textarea" /> 
+        </div>
+        <div class="form-group">
+            <legend>Lastname</legend>
+            <input id="lastname" name="lastname" type="textarea" />
+        </div>
+        <div class="control">
+        <legend>Gender</legend>
+            <input id="gender_male" name="gender" type="radio" />
+            <label for="gender_male">Male</label>
+        </div>
+        <div class="control">
+            <input id="gender_female" name="gender" type="radio" /><label for="gender_female">Female</label>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="textarea" name="email" id="email"/>
+        </div>
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" name="location" id="location"/>
+        </div>
+        <div class="form-group">
+            <label for="biography">Biography</label>
+            <input type="text" name="biography" id="biography"/>
+        </div>
+        <div class="control">
+            <label for="photo">Profile Picture</label>
+            <input id="image" type="file"/>
+        </div>
+        <button type="submit" name="submit" class="btn btn-primary btn-block">Add Profile</button>
+    </form>
+    </div>
+{% endblock %}

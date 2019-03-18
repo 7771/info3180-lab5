@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <h2>Create Profile</h2>
+
+    <form action="{{ url_for('basic_form') }}" method="post">
+        {% include 'flash_messages.html' %}
+        <div class="form-group">
+            <label for="firstname">First Name</label><br>
+            <input type="text" class="form-control" name="firstname" id="firstname" />
+        </div><br>
+        <div class="form-group">
+            <label for="lastname">Last Name:</label><br>
+            <input type="text" class="form-control" name="lastname" id="lastname" />
+        </div><br>
+        <div class="form-group">
+            <label for="email">E-mail</label><br>
+            <input type="email" class="form-control" name="email" id="email" placeholder="name@service.com" />
+        </div><br>
+        <div class="form-group">
+            <label for="location">Location</label><br>
+            <input type="text" class="form-control" name="location" id="location" placeholder="name@service.com" />
+        </div><br>
+        <div class="form-group">
+            Gender: <br>
+            <input type="radio" name="gender" value="male"> Male<br>
+            <input type="radio" name="gender" value="female"> Female<br>
+        </div>
+        <br>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endblock %}
